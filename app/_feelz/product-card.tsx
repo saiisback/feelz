@@ -5,7 +5,7 @@ import {
   ALLERGEN,
   BEST_BEFORE,
   DOSAGE,
-  PROPERTIES,
+  type Property,
   type Variant,
   type VariantId,
 } from "./data";
@@ -15,6 +15,7 @@ export type WaitlistPayload = { variant: VariantId; email: string };
 
 export function ProductCard({
   variant,
+  properties,
   expanded,
   onToggle,
   onFindIt,
@@ -23,6 +24,7 @@ export function ProductCard({
   motion: motionLevel,
 }: {
   variant: Variant;
+  properties: Property[];
   expanded: boolean;
   onToggle: () => void;
   onFindIt: (v: Variant) => void;
@@ -54,8 +56,11 @@ export function ProductCard({
   const lift = hover && motionLevel > 10;
 
   const stockedCount = useMemo(
-    () => PROPERTIES.filter((p) => p.stocks.includes(id)).length,
-    [id],
+    () =>
+      properties.filter(
+        (p) => p.status !== "soon" && p.stocks.includes(id),
+      ).length,
+    [id, properties],
   );
 
   function joinWaitlist(e: FormEvent<HTMLFormElement>) {

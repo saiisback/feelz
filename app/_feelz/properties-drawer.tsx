@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import {
-  PROPERTIES,
   VARIANTS,
+  type Property,
   type PropertyStatus,
   type VariantId,
 } from "./data";
@@ -13,11 +13,13 @@ export function PropertiesDrawer({
   onClose,
   focus,
   onChangeFocus,
+  properties,
 }: {
   open: boolean;
   onClose: () => void;
   focus: VariantId | null;
   onChangeFocus: (id: VariantId | null) => void;
+  properties: Property[];
 }) {
   useEffect(() => {
     document.body.classList.toggle("locked", open);
@@ -34,7 +36,7 @@ export function PropertiesDrawer({
     ...VARIANTS.map((v) => ({ id: v.id, label: v.name.toLowerCase() })),
   ];
 
-  const list = PROPERTIES.filter((p) => {
+  const list = properties.filter((p) => {
     if (focus && p.status !== "soon" && !p.stocks.includes(focus)) return false;
     if (
       query &&

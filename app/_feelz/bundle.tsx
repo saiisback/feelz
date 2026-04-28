@@ -1,13 +1,19 @@
 "use client";
 
 import { useState } from "react";
-import { PROPERTIES, VARIANTS } from "./data";
+import { VARIANTS, type Property } from "./data";
 import { FeelzMark, Sachet } from "./visuals";
 
-export function BundleStrip({ onFindAll }: { onFindAll: () => void }) {
-  const stockedNow = PROPERTIES.filter((p) => p.status !== "soon").length;
-  const comingSoon = PROPERTIES.filter((p) => p.status === "soon").length;
-  const regions = [...new Set(PROPERTIES.map((p) => p.region))];
+export function BundleStrip({
+  onFindAll,
+  properties,
+}: {
+  onFindAll: () => void;
+  properties: Property[];
+}) {
+  const stockedNow = properties.filter((p) => p.status !== "soon").length;
+  const comingSoon = properties.filter((p) => p.status === "soon").length;
+  const regions = [...new Set(properties.map((p) => p.region))];
   const [hover, setHover] = useState(false);
   const offsets = [-8, 6, -4, 8];
   const sachetLifts = [-10, -16, -8, -12];

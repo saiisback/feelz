@@ -5,6 +5,7 @@ import {
   PACK_FACTS,
   PROPERTIES,
   VARIANTS,
+  type Property,
   type Variant,
   type VariantId,
 } from "./_feelz/data";
@@ -12,6 +13,7 @@ import { FeelzMark, VariantPill, dottedBg } from "./_feelz/visuals";
 import { ProductCard, type WaitlistPayload } from "./_feelz/product-card";
 import { PropertiesDrawer } from "./_feelz/properties-drawer";
 import { BundleStrip, FootDisclaim } from "./_feelz/bundle";
+import { fetchProperties } from "@/lib/properties";
 
 const TWEAKS = {
   packStyle: "flat" as const,
@@ -69,7 +71,22 @@ export default function Home() {
   const [carouselIdx, setCarouselIdx] = useState(0);
   const [heroIdx, setHeroIdx] = useState(0);
   const [mobile, setMobile] = useState(false);
+  const [properties, setProperties] = useState<Property[]>(PROPERTIES);
   const railRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchProperties()
+      .then((rows) => {
+        if (!cancelled && rows.length > 0) setProperties(rows);
+      })
+      .catch((err) => {
+        console.warn("[feelz] property fetch failed, using seed:", err);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -272,7 +289,7 @@ export default function Home() {
                   fontWeight: 600,
                 }}
               >
-                {PROPERTIES.length}
+                {properties.length}
               </span>
             </button>
           </div>
@@ -573,6 +590,7 @@ export default function Home() {
                 >
                   <ProductCard
                     variant={v}
+                    properties={properties}
                     expanded={expanded === v.id}
                     onToggle={() =>
                       setExpanded((e) => (e === v.id ? null : v.id))
@@ -674,6 +692,7 @@ export default function Home() {
               >
                 <ProductCard
                   variant={v}
+                  properties={properties}
                   expanded={expanded === v.id}
                   onToggle={() =>
                     setExpanded((e) => (e === v.id ? null : v.id))
@@ -733,7 +752,10 @@ export default function Home() {
           </div>
         </section>
 
-        <BundleStrip onFindAll={() => openProperties(null)} />
+        <BundleStrip
+          onFindAll={() => openProperties(null)}
+          properties={properties}
+        />
 
         <section style={{ marginTop: 60, position: "relative" }}>
           <div
@@ -916,6 +938,7 @@ export default function Home() {
         onClose={() => setPropsOpen(false)}
         focus={propsFocus}
         onChangeFocus={setPropsFocus}
+        properties={properties}
       />
     </div>
   );
