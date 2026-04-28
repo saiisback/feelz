@@ -279,19 +279,18 @@ export default function Home() {
         </div>
       </nav>
 
-      <main style={{ maxWidth: 1280, margin: "0 auto", padding: "0 28px" }}>
-        <section
-          style={{
-            position: "relative",
-            margin: "32px -28px 0",
-            background: "#FFC107",
-            borderRadius: 28,
-            padding: mobile ? "60px 24px 70px" : "80px 48px 100px",
-            overflow: "hidden",
-            minHeight: mobile ? 560 : 640,
-            color: "#1a0f0a",
-          }}
-        >
+      <section
+        style={{
+          position: "relative",
+          marginTop: 32,
+          background: "#FFC107",
+          borderRadius: 28,
+          padding: mobile ? "60px 24px 70px" : "80px 48px 100px",
+          overflow: "hidden",
+          minHeight: mobile ? 560 : 640,
+          color: "#1a0f0a",
+        }}
+      >
           {VARIANTS.map((v, i) => (
             <div
               key={v.id}
@@ -540,8 +539,9 @@ export default function Home() {
               ),
             )}
           </div>
-        </section>
+      </section>
 
+      <main style={{ maxWidth: 1280, margin: "0 auto", padding: "0 28px" }}>
         <div id="shop-grid" style={{ height: 1 }} />
 
         {useCarousel ? (
