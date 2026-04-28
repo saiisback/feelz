@@ -1,44 +1,33 @@
 import type { Metadata } from "next";
-import {
-  Geist,
-  Geist_Mono,
-  Bricolage_Grotesque,
-  Great_Vibes,
-  Anton,
-} from "next/font/google";
+import { Boldonse, DM_Mono, Instrument_Serif } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const bricolage = Bricolage_Grotesque({
+const boldonse = Boldonse({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["800"],
+  weight: ["400"],
+  display: "swap",
 });
 
-const greatVibes = Great_Vibes({
-  variable: "--font-script",
+const dmMono = DM_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
-  weight: ["400"],
+  weight: ["300", "400", "500"],
+  display: "swap",
 });
 
-const anton = Anton({
-  variable: "--font-display-heavy",
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-serif",
   subsets: ["latin"],
   weight: ["400"],
+  style: ["normal", "italic"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Feels — Hit the flow",
-  description: "Focus, mood, and sleep strips by Mindcafe.",
+  title: "feelz · find at any zostel",
+  description:
+    "Sublingual mood strips by Mindcafé. Four moods, on demand. Find them at any Zostel.",
 };
 
 export default function RootLayout({
@@ -49,9 +38,9 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable} ${greatVibes.variable} ${anton.variable} h-full antialiased`}
+      className={`${boldonse.variable} ${dmMono.variable} ${instrumentSerif.variable}`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body>{children}</body>
     </html>
   );
 }
