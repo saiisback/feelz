@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState } from "react";
 import {
   ALLERGEN,
   BEST_BEFORE,
@@ -11,15 +11,11 @@ import {
 } from "./data";
 import { Pack, Sticker, dottedBg } from "./visuals";
 
-export type WaitlistPayload = { variant: VariantId; email: string };
-
 export function ProductCard({
   variant,
   properties,
   expanded,
   onToggle,
-  onFindIt,
-  onWaitlist,
   packStyle,
   motion: motionLevel,
 }: {
@@ -27,8 +23,6 @@ export function ProductCard({
   properties: Property[];
   expanded: boolean;
   onToggle: () => void;
-  onFindIt: (v: Variant) => void;
-  onWaitlist: (p: WaitlistPayload) => void;
   packStyle: "flat" | "3d";
   motion: number;
 }) {
@@ -48,9 +42,6 @@ export function ProductCard({
   } = variant;
 
   const [hover, setHover] = useState(false);
-  const [email, setEmail] = useState("");
-  const [joined, setJoined] = useState(false);
-  const [emailErr, setEmailErr] = useState(false);
 
   const tiltDeg = (motionLevel / 100) * tilt;
   const lift = hover && motionLevel > 10;
@@ -62,17 +53,6 @@ export function ProductCard({
       ).length,
     [id, properties],
   );
-
-  function joinWaitlist(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      setEmailErr(true);
-      return;
-    }
-    setEmailErr(false);
-    onWaitlist({ variant: id, email });
-    setJoined(true);
-  }
 
   const idx = ["focus", "extrovert", "joy", "sleep"].indexOf(id);
 
@@ -329,13 +309,18 @@ export function ProductCard({
           marginTop: 14,
         }}
       >
-        <button
+        <a
           className="push display"
+          href="https://www.mindcafe.app/feelz"
+          target="_blank"
+          rel="noreferrer"
           onClick={(e) => {
             e.stopPropagation();
-            onFindIt(variant);
           }}
           style={{
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
             background: inkOn === "#fff7ec" ? "#fff7ec" : "#1a0f0a",
             color: inkOn === "#fff7ec" ? "#1a0f0a" : "#fff7ec",
             border: "none",
@@ -346,59 +331,35 @@ export function ProductCard({
             cursor: "pointer",
             textTransform: "lowercase",
             boxShadow: "0 6px 0 rgba(0,0,0,0.18)",
+            textDecoration: "none",
           }}
         >
           find it at ↗
-        </button>
+        </a>
         <button
-          className="push mono"
           onClick={(e) => {
             e.stopPropagation();
-            const el = document.getElementById(`wl-${id}`);
-            el?.focus();
-            if (!expanded) onToggle();
+            onToggle();
           }}
+          className="mono"
           style={{
-            background: "transparent",
+            background: "rgba(0,0,0,0.10)",
             color: inkOn,
-            border: `1.5px solid ${inkOn}`,
-            padding: "16px 14px",
+            border: "none",
+            padding: "10px 14px",
             borderRadius: 999,
-            fontSize: 12,
-            letterSpacing: "0.06em",
+            fontSize: 11,
+            letterSpacing: "0.14em",
             textTransform: "uppercase",
             cursor: "pointer",
-            whiteSpace: "nowrap",
+            width: "100%",
+            textAlign: "center",
+            backdropFilter: "blur(2px)",
           }}
         >
-          notify me
+          {expanded ? "close details ↑" : "what's inside ↓"}
         </button>
       </div>
-
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggle();
-        }}
-        className="mono"
-        style={{
-          marginTop: 16,
-          background: "rgba(0,0,0,0.10)",
-          color: inkOn,
-          border: "none",
-          padding: "10px 14px",
-          borderRadius: 999,
-          fontSize: 11,
-          letterSpacing: "0.14em",
-          textTransform: "uppercase",
-          cursor: "pointer",
-          width: "100%",
-          textAlign: "center",
-          backdropFilter: "blur(2px)",
-        }}
-      >
-        {expanded ? "close details ↑" : "what's inside ↓"}
-      </button>
 
       <div
         className={`reveal ${expanded ? "open" : ""}`}
@@ -529,74 +490,15 @@ export function ProductCard({
                       opacity: 0.6,
                     }}
                   >
-                    notify me when stocked at my property
+                    available across selected zostels
                   </div>
-                  {joined ? (
-                    <div
-                      className="serif"
-                      style={{
-                        marginTop: 10,
-                        fontSize: 22,
-                        background: `linear-gradient(90deg, ${gradA}, ${gradB})`,
-                        WebkitBackgroundClip: "text",
-                        backgroundClip: "text",
-                        color: "transparent",
-                      }}
-                    >
-                      you&apos;re on the list ✦ front desk will know
-                    </div>
-                  ) : (
-                    <form
-                      onSubmit={joinWaitlist}
-                      style={{
-                        display: "flex",
-                        gap: 8,
-                        marginTop: 10,
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <input
-                        id={`wl-${id}`}
-                        type="email"
-                        className="feelz-input"
-                        placeholder="your email"
-                        value={email}
-                        onChange={(e) => {
-                          setEmail(e.target.value);
-                          setEmailErr(false);
-                        }}
-                        style={{
-                          borderColor: emailErr ? "#E73C7E" : undefined,
-                          flex: "1 1 180px",
-                        }}
-                      />
-                      <button
-                        type="submit"
-                        className="display push"
-                        style={{
-                          background: "#1a0f0a",
-                          color: "#fff7ec",
-                          border: "none",
-                          padding: "12px 18px",
-                          borderRadius: 999,
-                          fontSize: 14,
-                          cursor: "pointer",
-                          whiteSpace: "nowrap",
-                          textTransform: "lowercase",
-                        }}
-                      >
-                        notify me
-                      </button>
-                    </form>
-                  )}
-                  <div
-                    className="mono"
-                    style={{ fontSize: 10, marginTop: 8, opacity: 0.6 }}
+                  <p
+                    className="serif"
+                    style={{ fontSize: 19, lineHeight: 1.3, margin: "10px 0 0" }}
                   >
-                    {emailErr
-                      ? "⚠ that email's not quite right"
-                      : "we'll ping you when your zostel restocks this mood"}
-                  </div>
+                    Use “find it at” to see which properties currently have this
+                    mood in stock.
+                  </p>
                 </div>
 
                 <div

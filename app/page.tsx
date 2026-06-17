@@ -5,15 +5,13 @@ import {
   PACK_FACTS,
   PROPERTIES,
   VARIANTS,
-  type Property,
   type Variant,
   type VariantId,
 } from "./_feelz/data";
 import { FeelzMark, VariantPill, dottedBg } from "./_feelz/visuals";
-import { ProductCard, type WaitlistPayload } from "./_feelz/product-card";
+import { ProductCard } from "./_feelz/product-card";
 import { PropertiesDrawer } from "./_feelz/properties-drawer";
 import { BundleStrip, FootDisclaim } from "./_feelz/bundle";
-import { fetchProperties } from "@/lib/properties";
 
 const TWEAKS = {
   packStyle: "flat" as const,
@@ -71,22 +69,7 @@ export default function Home() {
   const [carouselIdx, setCarouselIdx] = useState(0);
   const [heroIdx, setHeroIdx] = useState(0);
   const [mobile, setMobile] = useState(false);
-  const [properties, setProperties] = useState<Property[]>(PROPERTIES);
   const railRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    fetchProperties()
-      .then((rows) => {
-        if (!cancelled && rows.length > 0) setProperties(rows);
-      })
-      .catch((err) => {
-        console.warn("[feelz] property fetch failed, using seed:", err);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -142,14 +125,9 @@ export default function Home() {
     setPropsOpen(true);
   }
 
-  function joinWaitlist(payload: WaitlistPayload) {
-    if (typeof console !== "undefined") {
-      console.log("[feelz] waitlist join:", payload);
-    }
-  }
-
   const useCarousel = mobile;
   const heroVariant = VARIANTS[heroIdx];
+  const properties = PROPERTIES;
 
   return (
     <div style={{ minHeight: "100vh", paddingBottom: 80 }}>
@@ -595,8 +573,6 @@ export default function Home() {
                     onToggle={() =>
                       setExpanded((e) => (e === v.id ? null : v.id))
                     }
-                    onFindIt={openProperties}
-                    onWaitlist={joinWaitlist}
                     packStyle={TWEAKS.packStyle}
                     motion={TWEAKS.motion}
                   />
@@ -697,8 +673,6 @@ export default function Home() {
                   onToggle={() =>
                     setExpanded((e) => (e === v.id ? null : v.id))
                   }
-                  onFindIt={openProperties}
-                  onWaitlist={joinWaitlist}
                   packStyle={TWEAKS.packStyle}
                   motion={TWEAKS.motion}
                 />
