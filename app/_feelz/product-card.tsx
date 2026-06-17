@@ -7,8 +7,8 @@ import {
   DOSAGE,
   type Property,
   type Variant,
-  type VariantId,
 } from "./data";
+import { capture } from "@/lib/analytics";
 import { Pack, Sticker, dottedBg } from "./visuals";
 
 export function ProductCard({
@@ -316,6 +316,7 @@ export function ProductCard({
           rel="noreferrer"
           onClick={(e) => {
             e.stopPropagation();
+            capture("product_find_it_clicked", { variant: id });
           }}
           style={{
             display: "inline-flex",
@@ -339,6 +340,10 @@ export function ProductCard({
         <button
           onClick={(e) => {
             e.stopPropagation();
+            capture("product_details_toggled", {
+              variant: id,
+              expanded: !expanded,
+            });
             onToggle();
           }}
           className="mono"

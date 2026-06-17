@@ -12,6 +12,7 @@ import { FeelzMark, VariantPill, dottedBg } from "./_feelz/visuals";
 import { ProductCard } from "./_feelz/product-card";
 import { PropertiesDrawer } from "./_feelz/properties-drawer";
 import { BundleStrip, FootDisclaim } from "./_feelz/bundle";
+import { capture } from "@/lib/analytics";
 
 const TWEAKS = {
   packStyle: "flat" as const,
@@ -68,8 +69,25 @@ export default function Home() {
   const [hoverVariant, setHoverVariant] = useState<VariantId | null>(null);
   const [carouselIdx, setCarouselIdx] = useState(0);
   const [heroIdx, setHeroIdx] = useState(0);
-  const [mobile, setMobile] = useState(false);
+  const [mobile, setMobile] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    return window.matchMedia("(max-width: 820px)").matches;
+  });
+  const didTrackLandingRef = useRef(false);
   const railRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (didTrackLandingRef.current) {
+      return;
+    }
+
+    didTrackLandingRef.current = true;
+    capture("feelz_landing_viewed", {
+      page_name: "feelz_home",
+    });
+  }, []);
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -81,7 +99,6 @@ export default function Home() {
   useEffect(() => {
     const m = window.matchMedia("(max-width: 820px)");
     const cb = (e: MediaQueryListEvent) => setMobile(e.matches);
-    setMobile(m.matches);
     m.addEventListener("change", cb);
     return () => m.removeEventListener("change", cb);
   }, []);
@@ -215,7 +232,10 @@ export default function Home() {
               science
             </a>
             <button
-              onClick={() => openProperties(null)}
+              onClick={() => {
+                capture("nav_find_a_zostel_clicked");
+                openProperties(null);
+              }}
               className="display push"
               style={{
                 background: "#1a0f0a",
@@ -449,6 +469,7 @@ export default function Home() {
 
             <button
               onClick={() => {
+                capture("hero_find_a_zostel_clicked");
                 const grid = document.getElementById("shop-grid");
                 if (grid)
                   window.scrollTo({
